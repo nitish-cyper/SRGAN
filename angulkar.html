@@ -1,3 +1,93 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-e-database',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './e-database.component.html',
+  styleUrls: ['./e-database.component.css']
+})
+export class EDatabaseComponent {
+  databases = [
+    { name: 'IEEE (ASPP) Journals', icon: '📘' },
+    { name: 'J-GATE Complete Database (Journals)', icon: '📚' },
+    { name: 'Elsevier Science Direct', icon: '🔬' },
+    { name: 'ASCE', icon: '👷‍♂️' },
+    { name: 'ASCE (New)', icon: '👷‍♂️' },
+    { name: 'Manupatra Online', icon: '⚖️' },
+    { name: 'AIR Online', icon: '📩' },
+    { name: 'Prowess IQ (Interactive Querying) II', icon: '📊' },
+    { name: 'Prowess IQ (Interactive Querying)', icon: '📊' },
+    { name: 'E-Shodh Sindhu', icon: '🌎' },
+    { name: 'E-Shodh Sindhu II', icon: 'ℹ️' },
+    { name: 'Previous Year Papers', icon: '📄' }
+  ];
+}
+
+<div class="container">
+  <h2>E-Books (Database)</h2>
+  <div class="database-grid">
+    <div class="database-item" *ngFor="let db of databases">
+      <span class="icon">{{ db.icon }}</span>
+      <span class="name">{{ db.name }}</span>
+    </div>
+  </div>
+</div>
+
+
+.container {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+  font-size: 22px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.database-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  justify-content: center;
+  padding: 10px;
+}
+
+.database-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  transition: 0.3s;
+  cursor: pointer;
+}
+
+.database-item:hover {
+  background: #e3f2fd;
+  transform: scale(1.05);
+}
+
+.icon {
+  font-size: 24px;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+
+
+
+
 app.route.ts
 
 import { Routes } from '@angular/router';
