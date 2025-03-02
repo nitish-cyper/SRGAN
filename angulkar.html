@@ -1,39 +1,76 @@
+dashboard.component.ts
+
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-e-database',
+  selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './e-database.component.html',
-  styleUrls: ['./e-database.component.css']
+  imports: [CommonModule, RouterModule],
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css']
 })
-export class EDatabaseComponent {
-  databases = [
-    { name: 'IEEE (ASPP) Journals', icon: '📘' },
-    { name: 'J-GATE Complete Database (Journals)', icon: '📚' },
-    { name: 'Elsevier Science Direct', icon: '🔬' },
-    { name: 'ASCE', icon: '👷‍♂️' },
-    { name: 'ASCE (New)', icon: '👷‍♂️' },
-    { name: 'Manupatra Online', icon: '⚖️' },
-    { name: 'AIR Online', icon: '📩' },
-    { name: 'Prowess IQ (Interactive Querying) II', icon: '📊' },
-    { name: 'Prowess IQ (Interactive Querying)', icon: '📊' },
-    { name: 'E-Shodh Sindhu', icon: '🌎' },
-    { name: 'E-Shodh Sindhu II', icon: 'ℹ️' },
-    { name: 'Previous Year Papers', icon: '📄' }
+export class DashboardComponent {
+  books = [
+    { title: 'What If?', author: 'Randall Munroe', cover: 'assets/books/what_if.jpg' },
+    { title: 'Milk and Honey', author: 'Rupi Kaur', cover: 'assets/books/milk_and_honey.jpg' },
+    { title: 'Scope and Closures (JS)', author: 'Kyle Simpson, 2014', cover: 'assets/books/scope_closures.jpg' },
+    { title: 'A Very Short Introduction to AI', author: 'Margaret A. Boden', cover: 'assets/books/ai_intro.jpg' },
+    { title: 'Sprint', author: 'Jake Knapp, 2000', cover: 'assets/books/sprint.jpg' }
   ];
 }
 
+
+dashboard.component.html
+
 <div class="container">
-  <h2>E-Books (Database)</h2>
-  <div class="database-grid">
-    <div class="database-item" *ngFor="let db of databases">
-      <span class="icon">{{ db.icon }}</span>
-      <span class="name">{{ db.name }}</span>
+  <h2>Welcome, Anagha!</h2>
+
+  <!-- Stats Section -->
+  <div class="stats">
+    <div class="stat-item">
+      <img src="assets/icons/issued_books.png" alt="Issued Books">
+      <span>Issued Books</span>
+      <span class="count">1</span>
+      <a routerLink="/issued-books">→</a>
+    </div>
+
+    <div class="stat-item">
+      <img src="assets/icons/overdue.png" alt="Overdue Items">
+      <span>Overdue Items</span>
+      <span class="count">0</span>
+      <a routerLink="/overdue-items">→</a>
+    </div>
+
+    <div class="stat-item">
+      <img src="assets/icons/saved.png" alt="Saved Selections">
+      <span>Saved Selections</span>
+      <span class="count">3</span>
+      <a routerLink="/saved-selections">→</a>
+    </div>
+
+    <div class="stat-item">
+      <img src="assets/icons/item_reservation.png" alt="Item Reservations">
+      <span>Item Reservations</span>
+      <span class="count">0</span>
+      <a routerLink="/item-reservations">→</a>
+    </div>
+  </div>
+
+  <!-- New Arrivals Section -->
+  <h3>New Arrivals</h3>
+  <div class="book-grid">
+    <div class="book-item" *ngFor="let book of books">
+      <img [src]="book.cover" [alt]="book.title">
+      <span class="title">{{ book.title }}</span>
+      <span class="author">{{ book.author }}</span>
     </div>
   </div>
 </div>
+
+
+.css
 
 
 .container {
@@ -44,156 +81,304 @@ export class EDatabaseComponent {
 }
 
 h2 {
-  text-align: center;
-  font-size: 22px;
+  text-align: left;
+  font-size: 24px;
   color: #333;
-  margin-bottom: 20px;
 }
 
-.database-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
-  justify-content: center;
-  padding: 10px;
-}
-
-.database-item {
+.stats {
   display: flex;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
   background: #f8f9fa;
-  padding: 12px;
-  border-radius: 8px;
+  padding: 15px;
+  border-radius: 10px;
+  width: 150px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
   transition: 0.3s;
-  cursor: pointer;
 }
 
-.database-item:hover {
+.stat-item:hover {
   background: #e3f2fd;
   transform: scale(1.05);
 }
 
-.icon {
-  font-size: 24px;
+.stat-item img {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 5px;
 }
 
-.name {
-  font-size: 16px;
-  font-weight: 500;
+.stat-item span {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
 }
 
+.count {
+  font-size: 18px;
+  font-weight: bold;
+  color: #007bff;
+}
 
+.stat-item a {
+  font-size: 18px;
+  text-decoration: none;
+  color: #007bff;
+}
 
+.book-grid {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+}
+
+.book-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 8px;
+  width: 140px;
+  text-align: center;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.book-item img {
+  width: 100px;
+  height: 140px;
+  border-radius: 5px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.author {
+  font-size: 12px;
+  color: gray;
+}
 
 
 app.route.ts
 
-import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
-import { CollectionComponent } from './pages/collection/collection.component';
-import { EDatabaseComponent } from './pages/e-database/e-database.component';
-import { OverdueChargesComponent } from './pages/overdue-charges/overdue-charges.component';
-import { HelpDeskComponent } from './pages/help-desk/help-desk.component';
-import { HistoryComponent } from './pages/history/history.component';
-import { LibraryRulesComponent } from './pages/library-rules/library-rules.component';
-import { SettingsComponent } from './pages/settings/settings.component';
-import { AccountComponent } from './pages/account/account.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { IssuedBooksComponent } from './pages/issued-books/issued-books.component';
+import { OverdueItemsComponent } from './pages/overdue-items/overdue-items.component';
+import { SavedSelectionsComponent } from './pages/saved-selections/saved-selections.component';
+import { ItemReservationsComponent } from './pages/item-reservations/item-reservations.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'collection', component: CollectionComponent },
-  { path: 'e-database', component: EDatabaseComponent },
-  { path: 'overdue-charges', component: OverdueChargesComponent },
-  { path: 'help-desk', component: HelpDeskComponent },
-  { path: 'history', component: HistoryComponent },
-  { path: 'library-rules', component: LibraryRulesComponent },
-  { path: 'settings', component: SettingsComponent },
-  { path: 'account', component: AccountComponent },
-  { path: '**', redirectTo: '' } // Redirect unknown routes to Home
+  { path: '', component: DashboardComponent },
+  { path: 'issued-books', component: IssuedBooksComponent },
+  { path: 'overdue-items', component: OverdueItemsComponent },
+  { path: 'saved-selections', component: SavedSelectionsComponent },
+  { path: 'item-reservations', component: ItemReservationsComponent }
 ];
 
 
-app.component.ts
+ng generate component pages/issued-books --standalone
+ng generate component pages/overdue-items --standalone
+ng generate component pages/saved-selections --standalone
+ng generate component pages/item-reservations --standalone
 
-import { Component } from '@angular/core';
-import { HeaderComponent } from './components/header/header.component';
-import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { FooterComponent } from './components/footer/footer.component';
-import { RouterModule } from '@angular/router';
-import { routes } from './app.routes';
 
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [HeaderComponent, SidebarComponent, FooterComponent, RouterModule.forRoot(routes)],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+models/book.model.ts
+
+export interface Book {
+  title: string;
+  author: string;
+  description: string;
+  cover: string;
+}
+
+
+services/book.service.ts
+
+import { Injectable } from '@angular/core';
+import { Book } from '../models/book.model';
+
+@Injectable({
+  providedIn: 'root',
 })
-export class AppComponent { }
+export class BookService {
+  private savedSelections: Book[] = [];
 
-app.componenet.html
+  getSavedSelections(): Book[] {
+    return this.savedSelections;
+  }
 
-<div class="container">
-  <app-header></app-header>
-  <div class="content">
-    <app-sidebar></app-sidebar>
-    <main class="main-content">
-      <router-outlet></router-outlet>
-    </main>
-  </div>
-  <app-footer></app-footer>
-</div>
+  saveBook(book: Book): void {
+    if (!this.savedSelections.find((b) => b.title === book.title)) {
+      this.savedSelections.push(book);
+    }
+  }
+}
 
-
-
-sidebar.component.html
-
-<aside class="sidebar">
-  <ul>
-    <li><mat-icon>home</mat-icon><a routerLink="/">Home</a></li>
-    <li><mat-icon>library_books</mat-icon><a routerLink="/collection">Collection</a></li>
-    <li><mat-icon>storage</mat-icon><a routerLink="/e-database">E-Database</a></li>
-    <li class="active"><mat-icon>warning</mat-icon><a routerLink="/overdue-charges">Overdue Charges</a></li>
-    <li><mat-icon>support</mat-icon><a routerLink="/help-desk">Help Desk</a></li>
-    <li><mat-icon>history</mat-icon><a routerLink="/history">History</a></li>
-    <li><mat-icon>rule</mat-icon><a routerLink="/library-rules">Library Rules</a></li>
-  </ul>
-
-  <div class="sidebar-footer">
-    <ul>
-      <li><mat-icon>settings</mat-icon><a routerLink="/settings">Settings</a></li>
-      <li><mat-icon>account_circle</mat-icon><a routerLink="/account">Account</a></li>
-    </ul>
-  </div>
-</aside>
-
-
-home.component.ts
+dashboard.component.ts
 
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule, Router } from '@angular/router';
+import { Book } from 'src/app/models/book.model';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css']
+})
+export class DashboardComponent {
+  books: Book[] = [
+    { title: 'What If?', author: 'Randall Munroe', description: 'Serious scientific answers to absurd hypothetical questions.', cover: 'assets/books/what_if.jpg' },
+    { title: 'Milk and Honey', author: 'Rupi Kaur', description: 'A collection of poetry about survival and love.', cover: 'assets/books/milk_and_honey.jpg' },
+    { title: 'Scope and Closures (JS)', author: 'Kyle Simpson, 2014', description: 'An in-depth look at JavaScript scope and closures.', cover: 'assets/books/scope_closures.jpg' },
+    { title: 'A Very Short Introduction to AI', author: 'Margaret A. Boden', description: 'Explains artificial intelligence in simple terms.', cover: 'assets/books/ai_intro.jpg' },
+    { title: 'Sprint', author: 'Jake Knapp, 2000', description: 'A guide to solving big problems in five days.', cover: 'assets/books/sprint.jpg' }
+  ];
+
+  constructor(private router: Router) {}
+
+  viewBookDetails(book: Book) {
+    this.router.navigate(['/book-details'], { state: { book } });
+  }
+}
+
+
+dashboard.component.html
+
+<h3>New Arrivals</h3>
+<div class="book-grid">
+  <div class="book-item" *ngFor="let book of books" (click)="viewBookDetails(book)">
+    <img [src]="book.cover" [alt]="book.title">
+    <span class="title">{{ book.title }}</span>
+    <span class="author">{{ book.author }}</span>
+  </div>
+</div>
+
+book-details-componenet.ts
+
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Book } from 'src/app/models/book.model';
+import { BookService } from 'src/app/services/book.service';
+
+@Component({
+  selector: 'app-book-details',
   standalone: true,
   imports: [CommonModule],
-  template: `<h2>Welcome to the Student Dashboard</h2>`,
-  styles: [`h2 { text-align: center; }`]
+  templateUrl: './book-details.component.html',
+  styleUrls: ['./book-details.component.css']
 })
-export class HomeComponent { }
+export class BookDetailsComponent {
+  book: Book | null = null;
+
+  constructor(private router: Router, private bookService: BookService) {
+    const navigation = this.router.getCurrentNavigation();
+    this.book = navigation?.extras.state?.['book'] ?? null;
+  }
+
+  saveBook() {
+    if (this.book) {
+      this.bookService.saveBook(this.book);
+      alert('Book saved to your selections!');
+    }
+  }
+}
+
+book-details.componenet.htlm
+
+<div *ngIf="book" class="book-details">
+  <img [src]="book.cover" [alt]="book.title">
+  <h2>{{ book.title }}</h2>
+  <h4>{{ book.author }}</h4>
+  <p>{{ book.description }}</p>
+  <button (click)="saveBook()">Save to Selections</button>
+</div>
 
 
-main.ts
-import { bootstrapApplication } from '@angular/platform-browser';
-import { AppComponent } from './app/app.component';
-import { importProvidersFrom } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { routes } from './app.routes';
+book-details.componenet.css
 
-bootstrapApplication(AppComponent, {
-  providers: [importProvidersFrom(RouterModule.forRoot(routes))]
-}).catch(err => console.error(err));
+.book-details {
+  text-align: center;
+  padding: 20px;
+}
+
+.book-details img {
+  width: 150px;
+  border-radius: 10px;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+
+saved-selections.component.ts
+
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { BookService } from 'src/app/services/book.service';
+
+@Component({
+  selector: 'app-saved-selections',
+  standalone: true,
+  imports: [CommonModule],
+  templateUrl: './saved-selections.component.html',
+  styleUrls: ['./saved-selections.component.css']
+})
+export class SavedSelectionsComponent {
+  savedBooks = this.bookService.getSavedSelections();
+
+  constructor(private bookService: BookService) {}
+}
+
+
+saved-selections.component.html
+
+<h2>Saved Selections</h2>
+<div class="book-grid" *ngIf="savedBooks.length > 0; else emptyState">
+  <div class="book-item" *ngFor="let book of savedBooks">
+    <img [src]="book.cover" [alt]="book.title">
+    <span class="title">{{ book.title }}</span>
+    <span class="author">{{ book.author }}</span>
+  </div>
+</div>
+
+<ng-template #emptyState>
+  <p>No saved books yet.</p>
+</ng-template>
+
+
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { BookDetailsComponent } from './pages/book-details/book-details.component';
+import { SavedSelectionsComponent } from './pages/saved-selections/saved-selections.component';
+
+export const routes: Routes = [
+  { path: '', component: DashboardComponent },
+  { path: 'book-details', component: BookDetailsComponent },
+  { path: 'saved-selections', component: SavedSelectionsComponent }
+];
+
+
 
 
