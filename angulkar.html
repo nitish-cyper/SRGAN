@@ -1,266 +1,109 @@
-app.component.html
-<div class="container">
-    <app-header></app-header>
-    <div class="content">
-        <app-sidebar></app-sidebar>
-        <app-main-content></app-main-content>
-    </div>
-    <app-footer></app-footer>
-</div>
+app.route.ts
+
+import { Routes } from '@angular/router';
+import { HomeComponent } from './pages/home/home.component';
+import { CollectionComponent } from './pages/collection/collection.component';
+import { EDatabaseComponent } from './pages/e-database/e-database.component';
+import { OverdueChargesComponent } from './pages/overdue-charges/overdue-charges.component';
+import { HelpDeskComponent } from './pages/help-desk/help-desk.component';
+import { HistoryComponent } from './pages/history/history.component';
+import { LibraryRulesComponent } from './pages/library-rules/library-rules.component';
+import { SettingsComponent } from './pages/settings/settings.component';
+import { AccountComponent } from './pages/account/account.component';
+
+export const routes: Routes = [
+  { path: '', component: HomeComponent },
+  { path: 'collection', component: CollectionComponent },
+  { path: 'e-database', component: EDatabaseComponent },
+  { path: 'overdue-charges', component: OverdueChargesComponent },
+  { path: 'help-desk', component: HelpDeskComponent },
+  { path: 'history', component: HistoryComponent },
+  { path: 'library-rules', component: LibraryRulesComponent },
+  { path: 'settings', component: SettingsComponent },
+  { path: 'account', component: AccountComponent },
+  { path: '**', redirectTo: '' } // Redirect unknown routes to Home
+];
 
 
-header.component.html
-<header class="header">
-    <h1>Prototype of Student Dashboard</h1>
-    <div class="user-info">
-        <span>Anagha Joshi</span>
-        <img src="assets/user-avatar.png" alt="User Avatar" />
-    </div>
-</header>
+app.component.ts
 
+import { Component } from '@angular/core';
+import { HeaderComponent } from './components/header/header.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { FooterComponent } from './components/footer/footer.component';
+import { RouterModule } from '@angular/router';
+import { routes } from './app.routes';
 
-header.component.css
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [HeaderComponent, SidebarComponent, FooterComponent, RouterModule.forRoot(routes)],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent { }
 
-.header {
-background: #fff;
-padding: 10px 20px;
-display: flex;
-justify-content: space-between;
-align-items: center;
-border-bottom: 1px solid #ddd;
-}
-.user-info {
-display: flex;
-align-items: center;
-}
-.user-info img {
-width: 30px;
-height: 30px;
-border-radius: 50%;
-margin-left: 10px;
-}
-
-sidebar.component.html
-<aside class="sidebar">
-    <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#">Collection</a></li>
-        <li><a href="#">E-Database</a></li>
-        <li class="active"><a href="#">Overdue Charges</a></li>
-        <li><a href="#">Help Desk</a></li>
-        <li><a href="#">History</a></li>
-        <li><a href="#">Library Rules</a></li>
-    </ul>
-</aside>
-
-
-sidebar.component.css
-
-.sidebar {
-width: 250px;
-background: #f4f4f4;
-padding: 15px;
-height: 100vh;
-}
-.sidebar ul {
-list-style: none;
-padding: 0;
-}
-.sidebar ul li {
-padding: 10px;
-}
-.sidebar ul li a {
-text-decoration: none;
-color: #333;
-display: block;
-}
-.sidebar ul .active {
-background: #6c63ff;
-color: white;
-}
-
-
-footer.component.html
-
-<footer class="footer">
-    <p>&copy; 2024 MIT-ADT University</p>
-</footer>
-
-
-footer.component.css
-
-.footer {
-background: #222;
-color: white;
-text-align: center;
-padding: 10px;
-position: absolute;
-bottom: 0;
-width: 100%;
-}
-
-
-maincontent.component.html
-<main class="main-content">
-    <!-- This section is left blank as per your request -->
-</main>
-
-
-maincontent.component.css
-.main-content {
-flex-grow: 1;
-padding: 20px;
-}
-
-
-style.css
-.container {
-display: flex;
-flex-direction: column;
-height: 100vh;
-}
-.content {
-display: flex;
-flex-grow: 1;
-}
-
-<header class="header">
-  <h1>Prototype of Student Dashboard</h1>
-
-  <div class="header-right">
-    <div class="search-box">
-      <mat-icon>search</mat-icon>
-      <input type="text" placeholder="Search..." />
-    </div>
-    <mat-icon class="icon">notifications</mat-icon>
-    <div class="user-info">
-      <span>Anagha Joshi</span>
-      <img src="assets/user-avatar.png" alt="User Avatar" />
-    </div>
-  </div>
-</header>
-
-
-.header {
-  background: #fff;
-  padding: 10px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #ddd;
-}
-.header-right {
-  display: flex;
-  align-items: center;
-}
-.search-box {
-  display: flex;
-  align-items: center;
-  background: #f1f1f1;
-  padding: 5px;
-  border-radius: 20px;
-  margin-right: 15px;
-}
-.search-box input {
-  border: none;
-  background: transparent;
-  outline: none;
-  padding-left: 5px;
-}
-.icon {
-  font-size: 24px;
-  cursor: pointer;
-  margin-right: 15px;
-}
-.user-info {
-  display: flex;
-  align-items: center;
-}
-.user-info img {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  margin-left: 10px;
-}
-
-
-<aside class="sidebar">
-  <ul>
-    <li><mat-icon>home</mat-icon><a href="#">Home</a></li>
-    <li><mat-icon>library_books</mat-icon><a href="#">Collection</a></li>
-    <li><mat-icon>database</mat-icon><a href="#">E-Database</a></li>
-    <li class="active"><mat-icon>warning</mat-icon><a href="#">Overdue Charges</a></li>
-    <li><mat-icon>support</mat-icon><a href="#">Help Desk</a></li>
-    <li><mat-icon>history</mat-icon><a href="#">History</a></li>
-    <li><mat-icon>rule</mat-icon><a href="#">Library Rules</a></li>
-  </ul>
-  
-  <div class="sidebar-footer">
-    <ul>
-      <li><mat-icon>help</mat-icon><a href="#">Help</a></li>
-      <li><mat-icon>settings</mat-icon><a href="#">Settings</a></li>
-      <li><mat-icon>account_circle</mat-icon><a href="#">Account</a></li>
-    </ul>
-  </div>
-</aside>
-
-.sidebar {
-  width: 250px;
-  background: #f4f4f4;
-  padding: 15px;
-  height: 100vh;
-}
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-}
-.sidebar ul li {
-  padding: 10px;
-  display: flex;
-  align-items: center;
-}
-.sidebar ul li a {
-  text-decoration: none;
-  color: #333;
-  margin-left: 10px;
-}
-.sidebar ul .active {
-  background: #6c63ff;
-  color: white;
-}
-.sidebar-footer {
-  margin-top: 20px;
-  border-top: 1px solid #ddd;
-  padding-top: 10px;
-}
-.mat-icon {
-  font-size: 20px;
-  color: #666;
-}
-
+app.componenet.html
 
 <div class="container">
   <app-header></app-header>
   <div class="content">
     <app-sidebar></app-sidebar>
-    <app-main-content></app-main-content>
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
   </div>
   <app-footer></app-footer>
 </div>
 
 
-app.modeule.ts
 
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
+sidebar.component.html
 
-@NgModule({
-  declarations: [...],
-  imports: [
-    MatIconModule,
-    MatInputModule
-  ],
-  bootstrap: [AppComponent]
+<aside class="sidebar">
+  <ul>
+    <li><mat-icon>home</mat-icon><a routerLink="/">Home</a></li>
+    <li><mat-icon>library_books</mat-icon><a routerLink="/collection">Collection</a></li>
+    <li><mat-icon>storage</mat-icon><a routerLink="/e-database">E-Database</a></li>
+    <li class="active"><mat-icon>warning</mat-icon><a routerLink="/overdue-charges">Overdue Charges</a></li>
+    <li><mat-icon>support</mat-icon><a routerLink="/help-desk">Help Desk</a></li>
+    <li><mat-icon>history</mat-icon><a routerLink="/history">History</a></li>
+    <li><mat-icon>rule</mat-icon><a routerLink="/library-rules">Library Rules</a></li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <ul>
+      <li><mat-icon>settings</mat-icon><a routerLink="/settings">Settings</a></li>
+      <li><mat-icon>account_circle</mat-icon><a routerLink="/account">Account</a></li>
+    </ul>
+  </div>
+</aside>
+
+
+home.component.ts
+
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-home',
+  standalone: true,
+  imports: [CommonModule],
+  template: `<h2>Welcome to the Student Dashboard</h2>`,
+  styles: [`h2 { text-align: center; }`]
 })
-export class AppModule { }
+export class HomeComponent { }
+
+
+main.ts
+import { bootstrapApplication } from '@angular/platform-browser';
+import { AppComponent } from './app/app.component';
+import { importProvidersFrom } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { routes } from './app.routes';
+
+bootstrapApplication(AppComponent, {
+  providers: [importProvidersFrom(RouterModule.forRoot(routes))]
+}).catch(err => console.error(err));
+
 
