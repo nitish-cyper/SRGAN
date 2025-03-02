@@ -1,0 +1,125 @@
+app.component.html
+<div class="container">
+    <app-header></app-header>
+    <div class="content">
+        <app-sidebar></app-sidebar>
+        <app-main-content></app-main-content>
+    </div>
+    <app-footer></app-footer>
+</div>
+
+
+header.component.html
+<header class="header">
+    <h1>Prototype of Student Dashboard</h1>
+    <div class="user-info">
+        <span>Anagha Joshi</span>
+        <img src="assets/user-avatar.png" alt="User Avatar" />
+    </div>
+</header>
+
+
+header.component.css
+
+.header {
+background: #fff;
+padding: 10px 20px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 1px solid #ddd;
+}
+.user-info {
+display: flex;
+align-items: center;
+}
+.user-info img {
+width: 30px;
+height: 30px;
+border-radius: 50%;
+margin-left: 10px;
+}
+
+sidebar.component.html
+<aside class="sidebar">
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Collection</a></li>
+        <li><a href="#">E-Database</a></li>
+        <li class="active"><a href="#">Overdue Charges</a></li>
+        <li><a href="#">Help Desk</a></li>
+        <li><a href="#">History</a></li>
+        <li><a href="#">Library Rules</a></li>
+    </ul>
+</aside>
+
+
+sidebar.component.css
+
+.sidebar {
+width: 250px;
+background: #f4f4f4;
+padding: 15px;
+height: 100vh;
+}
+.sidebar ul {
+list-style: none;
+padding: 0;
+}
+.sidebar ul li {
+padding: 10px;
+}
+.sidebar ul li a {
+text-decoration: none;
+color: #333;
+display: block;
+}
+.sidebar ul .active {
+background: #6c63ff;
+color: white;
+}
+
+
+footer.component.html
+
+<footer class="footer">
+    <p>&copy; 2024 MIT-ADT University</p>
+</footer>
+
+
+footer.component.css
+
+.footer {
+background: #222;
+color: white;
+text-align: center;
+padding: 10px;
+position: absolute;
+bottom: 0;
+width: 100%;
+}
+
+
+maincontent.component.html
+<main class="main-content">
+    <!-- This section is left blank as per your request -->
+</main>
+
+
+maincontent.component.css
+.main-content {
+flex-grow: 1;
+padding: 20px;
+}
+
+
+style.css
+.container {
+display: flex;
+flex-direction: column;
+height: 100vh;
+}
+.content {
+display: flex;
+flex-grow: 1;
+}
