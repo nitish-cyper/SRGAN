@@ -1,492 +1,3 @@
-sidebar.component.scss
-
-  .sidebar {
-  height: 100%;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  transition: width 0.3s ease;
-  overflow: hidden;
-  background-color: #0056b3; /* Brighter blue to match the image */
-}
-
-.expanded {
-  width: 240px;
-}
-
-.collapsed {
-  width: 64px;
-}
-
-.logo-container {
-  padding: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 64px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.logo-full {
-  height: 40px;
-  width: auto;
-}
-
-.logo-icon {
-  height: 32px;
-  width: 32px;
-}
-
-.sidebar-items {
-  display: flex;
-  flex-direction: column;
-  padding: 0;
-  overflow-y: hidden;
-}
-
-.sidebar-item {
-  display: flex;
-  align-items: center;
-  padding: 15px 16px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  border-radius: 0;
-  margin-right: 0;
-  white-space: nowrap;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  &.active {
-    background-color: rgba(0, 0, 0, 0.2);
-  }
-  
-  mat-icon {
-    margin-right: 16px;
-  }
-  
-  .item-text {
-    white-space: nowrap;
-    font-size: 14px;
-  }
-}
-
-.collapsed .sidebar-item {
-  justify-content: center;
-  padding: 15px 0;
-  
-  mat-icon {
-    margin-right: 0;
-  }
-}
-
-
-app.component.scss
-
-  .app-container {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  overflow: hidden;
-}
-
-.sidenav-container {
-  flex: 1;
-  overflow: hidden;
-}
-
-.sidenav {
-  transition: width 0.3s ease;
-  background-color: #0056b3; /* Brighter blue to match the image */
-  overflow: hidden;
-  border-right: none;
-}
-
-.sidenav-expanded {
-  width: 240px;
-}
-
-.sidenav-collapsed {
-  width: 64px;
-}
-
-.sidenav-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-  transition: margin-left 0.3s ease;
-  background-color: white;
-}
-
-sidebar.html
-
-  <div class="sidebar" [class.expanded]="isExpanded" [class.collapsed]="!isExpanded">
-  <div class="logo-container">
-    <div *ngIf="isExpanded" class="logo-text">
-      <div style="color: white; font-weight: bold; font-size: 16px;">Grocery Store</div>
-      <div style="color: white; font-size: 14px;">Management System</div>
-    </div>
-    <img *ngIf="!isExpanded" src="assets/logo-icon.png" alt="GSMS" class="logo-icon">
-  </div>
-  
-  <div class="sidebar-items">
-    <div 
-      *ngFor="let item of sidebarItems" 
-      class="sidebar-item" 
-      [class.active]="item.isActive"
-      [matTooltip]="!isExpanded ? item.text : ''"
-      matTooltipPosition="right">
-      <mat-icon>{{ item.icon }}</mat-icon>
-      <span *ngIf="isExpanded" class="item-text">{{ item.text }}</span>
-    </div>
-  </div>
-</div>
-
-  sidebar.comp.ts
-
-  import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
-import { MatTooltipModule } from '@angular/material/tooltip';
-
-interface SidebarItem {
-  icon: string;
-  text: string;
-  route: string;
-  isActive?: boolean;
-}
-
-@Component({
-  selector: 'app-sidebar',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatTooltipModule
-  ],
-  templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss']
-})
-export class SidebarComponent {
-  @Input() isExpanded = true;
-
-  sidebarItems: SidebarItem[] = [
-    { icon: 'dashboard', text: 'Dashboard', route: '/dashboard', isActive: true },
-    { icon: 'inventory_2', text: 'Stocks Management', route: '/stocks' },
-    { icon: 'local_shipping', text: 'Shipment Tracking', route: '/shipments' },
-    { icon: 'assessment', text: 'Reports & Analytics', route: '/reports' },
-    { icon: 'people', text: 'Customer Management', route: '/customers' },
-    { icon: 'article', text: 'Food Safety Blogs', route: '/blogs' },
-    { icon: 'settings', text: 'Settings', route: '/settings' },
-    { icon: 'account_circle', text: 'My Account', route: '/account' },
-    { icon: 'help', text: 'Help & Support', route: '/help' }
-  ];
-}
-
-header.comp.scss
-
-  .header {
-  background-color: white;
-  color: #333;
-  border-bottom: 1px solid #e0e0e0;
-  padding: 0 16px;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.search-container {
-  display: flex;
-  align-items: center;
-  background-color: #f5f5f5;
-  border-radius: 24px;
-  padding: 0 8px;
-  margin-left: 16px;
-  width: 400px;
-  height: 40px;
-}
-
-.search-input {
-  border: none;
-  background: transparent;
-  outline: none;
-  padding: 8px 12px;
-  width: 100%;
-  font-size: 14px;
-}
-
-.search-button {
-  color: #666;
-}
-
-.spacer {
-  flex: 1 1 auto;
-}
-
-.user-avatar {
-  background-color: #e0e0ff;
-  color: #1a4b8e;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  margin-left: 12px;
-}
-
-
-
-app.component.html
-
-  app.component.html
-
-<div class="app-container">
-  <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav #sidenav [mode]="'side'" [opened]="true" class="sidenav" [ngClass]="{'sidenav-expanded': isSidenavExpanded, 'sidenav-collapsed': !isSidenavExpanded}">
-      <app-sidebar [isExpanded]="isSidenavExpanded"></app-sidebar>
-    </mat-sidenav>
-    <mat-sidenav-content class="sidenav-content">
-      <app-header (toggleSidenavEvent)="toggleSidenav()"></app-header>
-      <app-main-content></app-main-content>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-</div>
-
-
-    app.component.scss
-
-    .app-container {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  overflow: hidden;
-}
-
-.sidenav-container {
-  flex: 1;
-  overflow: hidden;
-}
-
-.sidenav {
-  transition: width 0.3s ease;
-  background-color: #1a4b8e;
-  overflow: hidden;
-  border-right: none;
-}
-
-.sidenav-expanded {
-  width: 240px;
-}
-
-.sidenav-collapsed {
-  width: 64px;
-}
-
-.sidenav-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-  transition: margin-left 0.3s ease;
-}
-
-app.component.ts
-
-  import { Component, ViewChild, ElementRef, Renderer2 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
-
-import { HeaderComponent } from './components/header/header.component';
-import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { MainContentComponent } from './components/main-content/main-content.component';
-
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatSidenavModule,
-    HeaderComponent,
-    SidebarComponent,
-    MainContentComponent
-  ],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
-})
-export class AppComponent {
-  @ViewChild('sidenav') sidenav!: MatSidenav;
-  isSidenavExpanded = true;
-
-  constructor(private renderer: Renderer2, private el: ElementRef) {}
-
-  ngAfterViewInit() {
-    // Apply the initial margin to the content
-    this.updateContentMargin();
-  }
-
-  toggleSidenav() {
-    this.isSidenavExpanded = !this.isSidenavExpanded;
-    
-    // After toggling, update the margin of the sidenav-content
-    setTimeout(() => {
-      this.updateContentMargin();
-    }, 0);
-  }
-
-  private updateContentMargin() {
-    const sidenavContent = this.el.nativeElement.querySelector('.sidenav-content');
-    if (sidenavContent) {
-      if (this.isSidenavExpanded) {
-        this.renderer.setStyle(sidenavContent, 'margin-left', '0');
-      } else {
-        this.renderer.setStyle(sidenavContent, 'margin-left', '0');
-      }
-    }
-  }
-}
-
-sidebar.component.scss
-
-  .sidebar {
-  height: 100%;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  transition: width 0.3s ease;
-  overflow: hidden;
-}
-
-.expanded {
-  width: 240px;
-}
-
-.collapsed {
-  width: 64px;
-}
-
-.logo-container {
-  padding: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 64px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.logo-full {
-  height: 40px;
-  width: auto;
-}
-
-.logo-icon {
-  height: 32px;
-  width: 32px;
-}
-
-.sidebar-items {
-  display: flex;
-  flex-direction: column;
-  padding: 16px 0;
-  overflow-y: hidden;
-}
-
-.sidebar-item {
-  display: flex;
-  align-items: center;
-  padding: 12px 16px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  border-radius: 0 28px 28px 0;
-  margin-right: 16px;
-  white-space: nowrap;
-  
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  &.active {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-  
-  mat-icon {
-    margin-right: 16px;
-  }
-  
-  .item-text {
-    white-space: nowrap;
-  }
-}
-
-.collapsed .sidebar-item {
-  justify-content: center;
-  padding: 12px 0;
-  
-  mat-icon {
-    margin-right: 0;
-  }
-}
-
-
-main-content.scss
-
-  .main-content {
-  padding: 20px;
-  height: calc(100% - 64px);
-  background-color: #f8f9fa;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-@import '@angular/material/prebuilt-themes/indigo-pink.css';
-
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  overflow: hidden;
-}
-
-html, body {
-  height: 100%;
-  overflow: hidden;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-::-webkit-scrollbar {
-  display: none;
-}
-
-/* Hide scrollbar for IE, Edge and Firefox */
-* {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-}
-
-
-
-
-
-
-
-
-
-
 
 
 // File: main.ts
@@ -528,14 +39,14 @@ export class AppComponent {
 
   toggleSidenav() {
     this.isSidenavExpanded = !this.isSidenavExpanded;
-    this.sidenav.toggle();
+    // We're not actually toggling the sidenav open/close state
+    // because we want it to stay open but just resize
   }
 }
-
 // File: app/app.component.html
 <div class="app-container">
   <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav #sidenav [mode]="'side'" [opened]="isSidenavExpanded" class="sidenav">
+    <mat-sidenav #sidenav [mode]="'side'" [opened]="true" class="sidenav" [ngClass]="{'sidenav-expanded': isSidenavExpanded, 'sidenav-collapsed': !isSidenavExpanded}">
       <app-sidebar [isExpanded]="isSidenavExpanded"></app-sidebar>
     </mat-sidenav>
     <mat-sidenav-content class="sidenav-content">
@@ -554,21 +65,33 @@ export class AppComponent {
   bottom: 0;
   left: 0;
   right: 0;
+  overflow: hidden;
 }
 
 .sidenav-container {
   flex: 1;
+  overflow: hidden;
 }
 
 .sidenav {
-  width: 240px;
+  transition: width 0.3s ease;
   background-color: #1a4b8e;
+  overflow: hidden;
+}
+
+.sidenav-expanded {
+  width: 240px;
+}
+
+.sidenav-collapsed {
+  width: 64px;
 }
 
 .sidenav-content {
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden;
 }
 
 // File: app/components/header/header.component.ts
@@ -737,6 +260,7 @@ export class SidebarComponent {
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease;
+  overflow: hidden;
 }
 
 .expanded {
@@ -780,6 +304,7 @@ export class SidebarComponent {
   transition: background-color 0.2s;
   border-radius: 0 28px 28px 0;
   margin-right: 16px;
+  white-space: nowrap;
   
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
