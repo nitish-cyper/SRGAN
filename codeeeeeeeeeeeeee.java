@@ -1,332 +1,339 @@
-// app-routing.ts
-import { Routes } from '@angular/router';
-import { SignInComponent } from './auth/sign-in/sign-in.component';
-import { SignUpComponent } from './auth/sign-up/sign-up.component';
+Angular Standalone Grocery Management (main.ts)
 
-export const routes: Routes = [
-  { path: 'signin', component: SignInComponent },
-  { path: 'signup', component: SignUpComponent },
-  { path: '', redirectTo: 'signin', pathMatch: 'full' },
-  { path: '**', redirectTo: 'signin' }
-];
-
-// auth/auth-form/auth-form.component.ts
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-
-@Component({
-  selector: 'app-auth-form',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './auth-form.component.html',
-  styleUrls: ['./auth-form.component.css']
-})
-export class AuthFormComponent implements OnInit, OnChanges {
-  @Input() formType: 'signin' | 'signup' = 'signin';
-  @Output() formSubmitted = new EventEmitter<FormGroup>();
-
-  authForm: FormGroup;
-  isSignup: boolean = false;
-
-  constructor(private router: Router) {
-    this.authForm = new FormGroup({
-      username: new FormControl('', Validators.required),
-      password: new FormControl('', [Validators.required, Validators.minLength(6)])
-    });
-  }
-
-  ngOnInit() {
-    this.isSignup = this.formType === 'signup';
-    this.updateFormControls();
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['formType']) {
-      this.isSignup = this.formType === 'signup';
-      this.updateFormControls();
-    }
-  }
-
-  updateFormControls() {
-    if (this.isSignup) {
-      if (!this.authForm.get('confirmPassword')) {
-        this.authForm.addControl('confirmPassword', new FormControl('', Validators.required));
-        this.authForm.setValidators(this.passwordMatchValidator);
-      }
-    } else {
-      if (this.authForm.get('confirmPassword')) {
-        this.authForm.removeControl('confirmPassword');
-        this.authForm.clearValidators();
-      }
-    }
-    this.authForm.updateValueAndValidity();
-  }
-
-  passwordMatchValidator(form: FormGroup) {
-    const password = form.get('password')?.value;
-    const confirmPassword = form.get('confirmPassword')?.value;
-    return password === confirmPassword ? null : { passwordMismatch: true };
-  }
-
-  onSubmit() {
-    if (this.authForm.valid) {
-      this.formSubmitted.emit(this.authForm);
-      if (this.isSignup) {
-        this.router.navigate(['/signin']);
-      }
-    }
-  }
-
-  navigate() {
-    this.router.navigate([this.isSignup ? '/signin' : '/signup']);
-  }
-}
-
-// auth/auth-form/auth-form.component.html
-<div class="container">
-  <div class="auth-card">
-    <h2 class="title">GROCERY STORE <br> <span>MANAGEMENT SYSTEM</span></h2>
-    <div *ngIf="isSignup" class="description">
-      Streamline inventory, track orders, manage suppliers, and enhance store operations—all in one place.
-    </div>
-    <h3 class="subtitle">{{ isSignup ? 'ACCOUNT SIGN UP' : 'ACCOUNT SIGN IN' }}</h3>
-    
-    <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="username">Username</label>
-        <input id="username" formControlName="username" placeholder="Enter username" />
-        <div class="error" *ngIf="authForm.get('username')?.invalid && authForm.get('username')?.touched">
-          Username is required
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="password">Password *</label>
-        <input id="password" formControlName="password" type="password" placeholder="Enter password" />
-        <div class="error" *ngIf="authForm.get('password')?.invalid && authForm.get('password')?.touched">
-          Password must be at least 6 characters
-        </div>
-      </div>
-
-      <div *ngIf="isSignup" class="form-group">
-        <label for="confirmPassword">Confirm Password *</label>
-        <input id="confirmPassword" formControlName="confirmPassword" type="password" placeholder="Confirm password" />
-        <div class="error" *ngIf="authForm.hasError('passwordMismatch') && authForm.get('confirmPassword')?.touched">
-          Passwords do not match
-        </div>
-      </div>
-
-      <button type="submit" [disabled]="authForm.invalid" class="btn">
-        {{ isSignup ? 'Sign Up' : 'Sign In' }}
-      </button>
-    </form>
-
-    <p class="link-text">
-      {{ isSignup ? 'Already have an account?' : "Don't have an account?" }}
-      <a (click)="navigate()">{{ isSignup ? 'Sign In' : 'Sign Up' }}</a>
-    </p>
-  </div>
-</div>
-
-// auth/auth-form/auth-form.component.css
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: url('/assets/bg.jpg') no-repeat center center;
-  background-size: cover;
-}
-
-.auth-card {
-  background: white;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  width: 400px;
-  text-align: center;
-}
-
-.title {
-  font-size: 22px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.title span {
-  color: #007bff;
-  font-weight: bold;
-}
-
-.description {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 20px;
-}
-
-.subtitle {
-  font-size: 18px;
-  margin-bottom: 20px;
-  font-weight: 600;
-}
-
-.form-group {
-  margin-bottom: 15px;
-  text-align: left;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: 500;
-}
-
-input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
-}
-
-.error {
-  color: #dc3545;
-  font-size: 12px;
-  margin-top: 5px;
-}
-
-.btn {
-  width: 100%;
-  background-color: #007bff;
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-.btn:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-.link-text {
-  margin-top: 15px;
-  font-size: 14px;
-}
-
-.link-text a {
-  color: #007bff;
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-// auth/sign-in/sign-in.component.ts
-import { Component } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthFormComponent } from '../auth-form/auth-form.component';
-
-@Component({
-  selector: 'app-sign-in',
-  standalone: true,
-  imports: [AuthFormComponent],
-  template: '<app-auth-form formType="signin" (formSubmitted)="handleSignIn($event)"></app-auth-form>'
-})
-export class SignInComponent {
-  constructor(private router: Router) {}
-
-  handleSignIn(form: FormGroup) {
-    console.log('Sign In Successful', form.value);
-    // Here you would typically call an authentication service
-    // For demo purposes, just log the values
-    alert('Sign In Successful');
-  }
-}
-
-// auth/sign-up/sign-up.component.ts
-import { Component } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AuthFormComponent } from '../auth-form/auth-form.component';
-
-@Component({
-  selector: 'app-sign-up',
-  standalone: true,
-  imports: [AuthFormComponent],
-  template: '<app-auth-form formType="signup" (formSubmitted)="handleSignUp($event)"></app-auth-form>'
-})
-export class SignUpComponent {
-  constructor(private router: Router) {}
-
-  handleSignUp(form: FormGroup) {
-    console.log('Sign Up Successful', form.value);
-    // Here you would typically call a registration service
-    // For demo purposes, just log the values and redirect
-    alert('Sign Up Successful');
-    this.router.navigate(['/signin']);
-  }
-}
-
-// main.ts
 import { bootstrapApplication } from '@angular/platform-browser';
-import { provideRouter } from '@angular/router';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { AppComponent } from './app/app.component';
-import { routes } from './app/app-routing';
 
 bootstrapApplication(AppComponent, {
   providers: [
-    provideRouter(routes)
+    provideAnimations()
   ]
 }).catch(err => console.error(err));
 
-// app.component.ts
+
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+// Material Imports
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatCardModule } from '@angular/material/card';
+
+interface NavItem {
+  icon: string;
+  title: string;
+  active: boolean;
+}
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
-  template: '<router-outlet></router-outlet>'
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatListModule,
+    MatIconModule,
+    MatButtonModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatBadgeModule,
+    MatMenuModule,
+    MatCardModule
+  ],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'grocery-store-management';
+  title = 'grocery-management-system';
+  isExpanded = true;
+
+  navItems: NavItem[] = [
+    { icon: 'dashboard', title: 'Dashboard', active: true },
+    { icon: 'inventory_2', title: 'Stocks Management', active: false },
+    { icon: 'local_shipping', title: 'Shipment Tracking', active: false },
+    { icon: 'analytics', title: 'Reports & Analytics', active: false },
+    { icon: 'people', title: 'Customer Management', active: false },
+    { icon: 'menu_book', title: 'Food Safety Blogs', active: false },
+    { icon: 'settings', title: 'Settings', active: false },
+    { icon: 'account_circle', title: 'My Account', active: false },
+    { icon: 'help', title: 'Help & Support', active: false }
+  ];
+
+  toggleSidebar() {
+    this.isExpanded = !this.isExpanded;
+  }
+
+  setActiveItem(index: number) {
+    this.navItems.forEach((item, i) => {
+      item.active = i === index;
+    });
+  }
 }
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
 
-import java.io.Serializable;
-import java.util.List;
 
-@Entity
-@Getter
-@Setter
-public class Groups implements Serializable {
+app.component.html
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long groupId;
+<mat-sidenav-container class="sidenav-container">
+  <!-- Sidebar -->
+  <mat-sidenav #sidenav mode="side" [opened]="true" [ngClass]="{'expanded': isExpanded}" class="mat-elevation-z8">
+    <div class="sidebar-header">
+      <div class="logo-container">
+        <div class="logo">
+          <mat-icon>store</mat-icon>
+        </div>
+        <div class="logo-text" *ngIf="isExpanded">
+          <div class="title">Grocery Store</div>
+          <div class="subtitle">Management System</div>
+        </div>
+      </div>
+    </div>
 
-    @NotNull
-    private String groupName;
+    <mat-divider></mat-divider>
 
-    private boolean isPublic;
+    <!-- Navigation Menu -->
+    <mat-nav-list>
+      <a mat-list-item *ngFor="let item of navItems; let i = index" 
+         [ngClass]="{'active-link': item.active}"
+         (click)="setActiveItem(i)">
+        <mat-icon matListItemIcon>{{item.icon}}</mat-icon>
+        <span matListItemTitle *ngIf="isExpanded">{{item.title}}</span>
+      </a>
+    </mat-nav-list>
 
-    @ManyToOne
-    @JoinColumn(name = "creator_id", nullable = false)
-    private Users groupCreator;
+    <!-- Toggle Button -->
+    <div class="toggle-container">
+      <button mat-mini-fab color="primary" (click)="toggleSidebar()">
+        <mat-icon>{{isExpanded ? 'chevron_left' : 'chevron_right'}}</mat-icon>
+      </button>
+    </div>
+  </mat-sidenav>
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GroupMember> members;
+  <!-- Main Content -->
+  <mat-sidenav-content>
+    <!-- Header Toolbar -->
+    <mat-toolbar color="primary" class="mat-elevation-z4">
+      <span *ngIf="isExpanded">Hello John Doe!</span>
+      <span class="toolbar-spacer"></span>
+      
+      <!-- Search box -->
+      <div class="search-container">
+        <mat-form-field appearance="outline">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput placeholder="Search...">
+        </mat-form-field>
+      </div>
+      
+      <!-- Notifications -->
+      <button mat-icon-button>
+        <mat-icon [matBadge]="'2'" matBadgeColor="accent">notifications</mat-icon>
+      </button>
+      
+      <!-- User Avatar -->
+      <button mat-icon-button [matMenuTriggerFor]="userMenu">
+        <div class="user-avatar">JD</div>
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item>
+          <mat-icon>person</mat-icon>
+          <span>Profile</span>
+        </button>
+        <button mat-menu-item>
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <!-- Main Content Area -->
+    <div class="content-container">
+      <div class="dashboard-card mat-elevation-z2">
+        <h2>Dashboard Overview</h2>
+        <p>Welcome to your grocery store management dashboard.</p>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+
+  Angular Standalone Grocery Management (app.component.scss)
+
+.sidenav-container {
+  height: 100vh;
 }
+
+mat-sidenav {
+  width: 250px;
+  background-color: #fff;
+  transition: width 0.3s ease;
+  overflow-x: hidden;
+  
+  &.expanded {
+    width: 250px;
+  }
+  
+  &:not(.expanded) {
+    width: 70px;
+    
+    .logo-container {
+      justify-content: center;
+    }
+    
+    .mat-list-item {
+      padding: 0 8px;
+    }
+  }
+}
+
+.sidebar-header {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  background-color: #3f51b5;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.logo-text {
+  margin-left: 12px;
+  
+  .title {
+    font-weight: 500;
+    font-size: 14px;
+  }
+  
+  .subtitle {
+    font-size: 11px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.toggle-container {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.active-link {
+  background-color: rgba(63, 81, 181, 0.1);
+  color: #3f51b5;
+  
+  mat-icon {
+    color: #3f51b5;
+  }
+}
+
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.search-container {
+  margin-right: 16px;
+  width: 300px;
+  
+  .mat-form-field {
+    width: 100%;
+    font-size: 14px;
+    
+    ::ng-deep .mat-form-field-wrapper {
+      padding-bottom: 0;
+    }
+    
+    ::ng-deep .mat-form-field-outline {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+    
+    ::ng-deep .mat-form-field-infix {
+      padding: 0.5em 0;
+    }
+  }
+  
+  input {
+    color: white;
+    
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+  
+  mat-icon {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #c5cae9;
+  color: #3f51b5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.content-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+  min-height: calc(100vh - 64px);
+}
+
+.dashboard-card {
+  background-color: white;
+  padding: 24px;
+  border-radius: 4px;
+  
+  h2 {
+    margin-top: 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 16px;
+  }
+  
+  p {
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+
+ng add @angular/material
+
+
+
+  
+
+
 
 
 import jakarta.persistence.*;
