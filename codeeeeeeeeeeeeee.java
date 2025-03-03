@@ -1,3 +1,210 @@
+sidebar.component.html
+  
+<div class="sidebar" [class.expanded]="isExpanded" [class.collapsed]="!isExpanded">
+  <div class="logo-container">
+    <img *ngIf="isExpanded" src="assets/logo-full.png" alt="Grocery Store Management System" class="logo-full">
+    <img *ngIf="!isExpanded" src="assets/logo-icon.png" alt="GSMS" class="logo-icon">
+  </div>
+  
+  <div class="sidebar-items">
+    <div 
+      *ngFor="let item of sidebarItems" 
+      class="sidebar-item" 
+      [class.active]="item.isActive"
+      [matTooltip]="!isExpanded ? item.text : ''"
+      matTooltipPosition="right">
+      <mat-icon>{{ item.icon }}</mat-icon>
+      <span *ngIf="isExpanded" class="item-text">{{ item.text }}</span>
+    </div>
+  </div>
+</div>
+
+  sidebar.component.scss
+
+.sidebar {
+  height: 100%;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+
+.expanded {
+  width: 240px;
+}
+
+.collapsed {
+  width: 64px;
+}
+
+.logo-container {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 64px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo-full {
+  height: 40px;
+  width: auto;
+}
+
+.logo-icon {
+  height: 32px;
+  width: 32px;
+}
+
+.sidebar-items {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-radius: 0 28px 28px 0;
+  margin-right: 16px;
+  white-space: nowrap;
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  &.active {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  mat-icon {
+    margin-right: 16px;
+  }
+  
+  .item-text {
+    white-space: nowrap;
+  }
+}
+
+.collapsed .sidebar-item {
+  justify-content: center;
+  padding: 12px 0;
+  
+  mat-icon {
+    margin-right: 0;
+  }
+}
+
+
+app.component.ts
+
+import { Component, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
+
+import { HeaderComponent } from './components/header/header.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { MainContentComponent } from './components/main-content/main-content.component';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatSidenavModule,
+    HeaderComponent,
+    SidebarComponent,
+    MainContentComponent
+  ],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent {
+  @ViewChild('sidenav') sidenav!: MatSidenav;
+  isSidenavExpanded = true;
+
+  toggleSidenav() {
+    this.isSidenavExpanded = !this.isSidenavExpanded;
+    // We're not actually toggling the sidenav open/close state
+    // because we want it to stay open but just resize
+  }
+}
+
+
+app.component.html
+
+<div class="app-container">
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #sidenav [mode]="'side'" [opened]="true" class="sidenav" [ngClass]="{'sidenav-expanded': isSidenavExpanded, 'sidenav-collapsed': !isSidenavExpanded}">
+      <app-sidebar [isExpanded]="isSidenavExpanded"></app-sidebar>
+    </mat-sidenav>
+    <mat-sidenav-content class="sidenav-content">
+      <app-header (toggleSidenavEvent)="toggleSidenav()"></app-header>
+      <app-main-content></app-main-content>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>
+
+  app.component.scss
+
+  .app-container {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+}
+
+.sidenav-container {
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidenav {
+  transition: width 0.3s ease;
+  background-color: #1a4b8e;
+  overflow: hidden;
+}
+
+.sidenav-expanded {
+  width: 240px;
+}
+
+.sidenav-collapsed {
+  width: 64px;
+}
+
+.sidenav-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // File: main.ts
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
