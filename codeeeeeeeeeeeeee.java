@@ -1,3 +1,251 @@
+sidebar.component.scss
+
+  .sidebar {
+  height: 100%;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s ease;
+  overflow: hidden;
+  background-color: #0056b3; /* Brighter blue to match the image */
+}
+
+.expanded {
+  width: 240px;
+}
+
+.collapsed {
+  width: 64px;
+}
+
+.logo-container {
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 64px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo-full {
+  height: 40px;
+  width: auto;
+}
+
+.logo-icon {
+  height: 32px;
+  width: 32px;
+}
+
+.sidebar-items {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow-y: hidden;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-radius: 0;
+  margin-right: 0;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  &.active {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  
+  mat-icon {
+    margin-right: 16px;
+  }
+  
+  .item-text {
+    white-space: nowrap;
+    font-size: 14px;
+  }
+}
+
+.collapsed .sidebar-item {
+  justify-content: center;
+  padding: 15px 0;
+  
+  mat-icon {
+    margin-right: 0;
+  }
+}
+
+
+app.component.scss
+
+  .app-container {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+}
+
+.sidenav-container {
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidenav {
+  transition: width 0.3s ease;
+  background-color: #0056b3; /* Brighter blue to match the image */
+  overflow: hidden;
+  border-right: none;
+}
+
+.sidenav-expanded {
+  width: 240px;
+}
+
+.sidenav-collapsed {
+  width: 64px;
+}
+
+.sidenav-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  transition: margin-left 0.3s ease;
+  background-color: white;
+}
+
+sidebar.html
+
+  <div class="sidebar" [class.expanded]="isExpanded" [class.collapsed]="!isExpanded">
+  <div class="logo-container">
+    <div *ngIf="isExpanded" class="logo-text">
+      <div style="color: white; font-weight: bold; font-size: 16px;">Grocery Store</div>
+      <div style="color: white; font-size: 14px;">Management System</div>
+    </div>
+    <img *ngIf="!isExpanded" src="assets/logo-icon.png" alt="GSMS" class="logo-icon">
+  </div>
+  
+  <div class="sidebar-items">
+    <div 
+      *ngFor="let item of sidebarItems" 
+      class="sidebar-item" 
+      [class.active]="item.isActive"
+      [matTooltip]="!isExpanded ? item.text : ''"
+      matTooltipPosition="right">
+      <mat-icon>{{ item.icon }}</mat-icon>
+      <span *ngIf="isExpanded" class="item-text">{{ item.text }}</span>
+    </div>
+  </div>
+</div>
+
+  sidebar.comp.ts
+
+  import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
+interface SidebarItem {
+  icon: string;
+  text: string;
+  route: string;
+  isActive?: boolean;
+}
+
+@Component({
+  selector: 'app-sidebar',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatIconModule,
+    MatTooltipModule
+  ],
+  templateUrl: './sidebar.component.html',
+  styleUrls: ['./sidebar.component.scss']
+})
+export class SidebarComponent {
+  @Input() isExpanded = true;
+
+  sidebarItems: SidebarItem[] = [
+    { icon: 'dashboard', text: 'Dashboard', route: '/dashboard', isActive: true },
+    { icon: 'inventory_2', text: 'Stocks Management', route: '/stocks' },
+    { icon: 'local_shipping', text: 'Shipment Tracking', route: '/shipments' },
+    { icon: 'assessment', text: 'Reports & Analytics', route: '/reports' },
+    { icon: 'people', text: 'Customer Management', route: '/customers' },
+    { icon: 'article', text: 'Food Safety Blogs', route: '/blogs' },
+    { icon: 'settings', text: 'Settings', route: '/settings' },
+    { icon: 'account_circle', text: 'My Account', route: '/account' },
+    { icon: 'help', text: 'Help & Support', route: '/help' }
+  ];
+}
+
+header.comp.scss
+
+  .header {
+  background-color: white;
+  color: #333;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0 16px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 24px;
+  padding: 0 8px;
+  margin-left: 16px;
+  width: 400px;
+  height: 40px;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  padding: 8px 12px;
+  width: 100%;
+  font-size: 14px;
+}
+
+.search-button {
+  color: #666;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user-avatar {
+  background-color: #e0e0ff;
+  color: #1a4b8e;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-left: 12px;
+}
+
+
+
 app.component.html
 
   app.component.html
