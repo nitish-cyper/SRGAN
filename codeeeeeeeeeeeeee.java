@@ -1,27 +1,119 @@
-sidebar.component.html
-  
-<div class="sidebar" [class.expanded]="isExpanded" [class.collapsed]="!isExpanded">
-  <div class="logo-container">
-    <img *ngIf="isExpanded" src="assets/logo-full.png" alt="Grocery Store Management System" class="logo-full">
-    <img *ngIf="!isExpanded" src="assets/logo-icon.png" alt="GSMS" class="logo-icon">
-  </div>
-  
-  <div class="sidebar-items">
-    <div 
-      *ngFor="let item of sidebarItems" 
-      class="sidebar-item" 
-      [class.active]="item.isActive"
-      [matTooltip]="!isExpanded ? item.text : ''"
-      matTooltipPosition="right">
-      <mat-icon>{{ item.icon }}</mat-icon>
-      <span *ngIf="isExpanded" class="item-text">{{ item.text }}</span>
-    </div>
-  </div>
+app.component.html
+
+  app.component.html
+
+<div class="app-container">
+  <mat-sidenav-container class="sidenav-container">
+    <mat-sidenav #sidenav [mode]="'side'" [opened]="true" class="sidenav" [ngClass]="{'sidenav-expanded': isSidenavExpanded, 'sidenav-collapsed': !isSidenavExpanded}">
+      <app-sidebar [isExpanded]="isSidenavExpanded"></app-sidebar>
+    </mat-sidenav>
+    <mat-sidenav-content class="sidenav-content">
+      <app-header (toggleSidenavEvent)="toggleSidenav()"></app-header>
+      <app-main-content></app-main-content>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 </div>
 
-  sidebar.component.scss
 
-.sidebar {
+    app.component.scss
+
+    .app-container {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+}
+
+.sidenav-container {
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidenav {
+  transition: width 0.3s ease;
+  background-color: #1a4b8e;
+  overflow: hidden;
+  border-right: none;
+}
+
+.sidenav-expanded {
+  width: 240px;
+}
+
+.sidenav-collapsed {
+  width: 64px;
+}
+
+.sidenav-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  transition: margin-left 0.3s ease;
+}
+
+app.component.ts
+
+  import { Component, ViewChild, ElementRef, Renderer2 } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
+
+import { HeaderComponent } from './components/header/header.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { MainContentComponent } from './components/main-content/main-content.component';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatSidenavModule,
+    HeaderComponent,
+    SidebarComponent,
+    MainContentComponent
+  ],
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
+})
+export class AppComponent {
+  @ViewChild('sidenav') sidenav!: MatSidenav;
+  isSidenavExpanded = true;
+
+  constructor(private renderer: Renderer2, private el: ElementRef) {}
+
+  ngAfterViewInit() {
+    // Apply the initial margin to the content
+    this.updateContentMargin();
+  }
+
+  toggleSidenav() {
+    this.isSidenavExpanded = !this.isSidenavExpanded;
+    
+    // After toggling, update the margin of the sidenav-content
+    setTimeout(() => {
+      this.updateContentMargin();
+    }, 0);
+  }
+
+  private updateContentMargin() {
+    const sidenavContent = this.el.nativeElement.querySelector('.sidenav-content');
+    if (sidenavContent) {
+      if (this.isSidenavExpanded) {
+        this.renderer.setStyle(sidenavContent, 'margin-left', '0');
+      } else {
+        this.renderer.setStyle(sidenavContent, 'margin-left', '0');
+      }
+    }
+  }
+}
+
+sidebar.component.scss
+
+  .sidebar {
   height: 100%;
   color: white;
   display: flex;
@@ -61,6 +153,7 @@ sidebar.component.html
   display: flex;
   flex-direction: column;
   padding: 16px 0;
+  overflow-y: hidden;
 }
 
 .sidebar-item {
@@ -100,99 +193,42 @@ sidebar.component.html
 }
 
 
-app.component.ts
+main-content.scss
 
-import { Component, ViewChild } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatSidenavModule, MatSidenav } from '@angular/material/sidenav';
-
-import { HeaderComponent } from './components/header/header.component';
-import { SidebarComponent } from './components/sidebar/sidebar.component';
-import { MainContentComponent } from './components/main-content/main-content.component';
-
-@Component({
-  selector: 'app-root',
-  standalone: true,
-  imports: [
-    CommonModule,
-    MatSidenavModule,
-    HeaderComponent,
-    SidebarComponent,
-    MainContentComponent
-  ],
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
-})
-export class AppComponent {
-  @ViewChild('sidenav') sidenav!: MatSidenav;
-  isSidenavExpanded = true;
-
-  toggleSidenav() {
-    this.isSidenavExpanded = !this.isSidenavExpanded;
-    // We're not actually toggling the sidenav open/close state
-    // because we want it to stay open but just resize
-  }
+  .main-content {
+  padding: 20px;
+  height: calc(100% - 64px);
+  background-color: #f8f9fa;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
 
-app.component.html
-
-<div class="app-container">
-  <mat-sidenav-container class="sidenav-container">
-    <mat-sidenav #sidenav [mode]="'side'" [opened]="true" class="sidenav" [ngClass]="{'sidenav-expanded': isSidenavExpanded, 'sidenav-collapsed': !isSidenavExpanded}">
-      <app-sidebar [isExpanded]="isSidenavExpanded"></app-sidebar>
-    </mat-sidenav>
-    <mat-sidenav-content class="sidenav-content">
-      <app-header (toggleSidenavEvent)="toggleSidenav()"></app-header>
-      <app-main-content></app-main-content>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-</div>
-
-  app.component.scss
-
-  .app-container {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
   overflow: hidden;
 }
 
-.sidenav-container {
-  flex: 1;
-  overflow: hidden;
-}
-
-.sidenav {
-  transition: width 0.3s ease;
-  background-color: #1a4b8e;
-  overflow: hidden;
-}
-
-.sidenav-expanded {
-  width: 240px;
-}
-
-.sidenav-collapsed {
-  width: 64px;
-}
-
-.sidenav-content {
-  display: flex;
-  flex-direction: column;
+html, body {
   height: 100%;
   overflow: hidden;
 }
 
+* {
+  box-sizing: border-box;
+}
 
+::-webkit-scrollbar {
+  display: none;
+}
 
-  
-
-
+/* Hide scrollbar for IE, Edge and Firefox */
+* {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
 
 
 
