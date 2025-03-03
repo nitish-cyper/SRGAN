@@ -1,3 +1,233 @@
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { SignInComponent } from './sign-in/sign-in.component';
+import { SignUpComponent } from './sign-up/sign-up.component';
+
+const routes: Routes = [
+  { path: 'signin', component: SignInComponent },
+  { path: 'signup', component: SignUpComponent },
+  { path: '**', redirectTo: 'signin' }  // Default route
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule { }
+Step 2: Create a Reusable Form Component
+This component will be used for both Sign Up and Sign In.
+
+📄 auth-form.component.ts
+typescript
+Copy
+Edit
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-auth-form',
+  templateUrl: './auth-form.component.html',
+  styleUrls: ['./auth-form.component.css']
+})
+export class AuthFormComponent {
+  @Input() isSignup = false;
+  @Output() formSubmitted = new EventEmitter<FormGroup>();
+
+  authForm: FormGroup;
+
+  constructor(private router: Router) {
+    this.authForm = new FormGroup({
+      username: new FormControl('', Validators.required),
+      password: new FormControl('', [Validators.required, Validators.minLength(6)])
+    });
+
+    if (this.isSignup) {
+      this.authForm.addControl('confirmPassword', new FormControl('', Validators.required));
+      this.authForm.setValidators(this.passwordMatchValidator);
+    }
+  }
+
+  passwordMatchValidator(form: FormGroup) {
+    const password = form.get('password')?.value;
+    const confirmPassword = form.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { passwordMismatch: true };
+  }
+
+  onSubmit() {
+    if (this.authForm.valid) {
+      this.formSubmitted.emit(this.authForm);
+      if (this.isSignup) {
+        this.router.navigate(['/signin']);
+      }
+    }
+  }
+
+  navigate() {
+    this.router.navigate([this.isSignup ? '/signin' : '/signup']);
+  }
+}
+Step 3: Create the Template for the Reusable Form
+📄 auth-form.component.html
+html
+Copy
+Edit
+<div class="container">
+  <div class="auth-card">
+    <h2 class="title">GROCERY STORE <br> <span>MANAGEMENT SYSTEM</span></h2>
+    <p *ngIf="isSignup" class="description">
+      Streamline inventory, track orders, manage suppliers, and enhance store operations—all in one place.
+    </p>
+    <h3 class="subtitle">{{ isSignup ? 'ACCOUNT SIGN UP' : 'ACCOUNT SIGN IN' }}</h3>
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input id="username" formControlName="username" placeholder="Enter username" />
+        <div class="error" *ngIf="authForm.get('username')?.invalid && authForm.get('username')?.touched">
+          Username is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password *</label>
+        <input id="password" formControlName="password" type="password" placeholder="Enter password" />
+        <div class="error" *ngIf="authForm.get('password')?.invalid && authForm.get('password')?.touched">
+          Password must be at least 6 characters
+        </div>
+      </div>
+
+      <div *ngIf="isSignup" class="form-group">
+        <label for="confirmPassword">Confirm Password *</label>
+        <input id="confirmPassword" formControlName="confirmPassword" type="password" placeholder="Confirm password" />
+        <div class="error" *ngIf="authForm.hasError('passwordMismatch') && authForm.get('confirmPassword')?.touched">
+          Passwords do not match
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="authForm.invalid" class="btn">
+        {{ isSignup ? 'Sign Up' : 'Sign In' }}
+      </button>
+    </form>
+
+    <p class="link-text">
+      {{ isSignup ? 'Already have an account?' : "Don't have an account?" }}
+      <a (click)="navigate()">{{ isSignup ? 'Sign In' : 'Sign Up' }}</a>
+    </p>
+  </div>
+</div>
+Step 4: Create Sign In and Sign Up Components
+📄 sign-in.component.ts
+typescript
+Copy
+Edit
+import { Component } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+
+@Component({
+  selector: 'app-sign-in',
+  template: '<app-auth-form [isSignup]="false" (formSubmitted)="handleSignIn($event)"></app-auth-form>'
+})
+export class SignInComponent {
+  handleSignIn(form: FormGroup) {
+    console.log('Sign In Successful', form.value);
+  }
+}
+📄 sign-up.component.ts
+typescript
+Copy
+Edit
+import { Component } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+
+@Component({
+  selector: 'app-sign-up',
+  template: '<app-auth-form [isSignup]="true" (formSubmitted)="handleSignUp($event)"></app-auth-form>'
+})
+export class SignUpComponent {
+  handleSignUp(form: FormGroup) {
+    console.log('Sign Up Successful', form.value);
+  }
+}
+Step 5: Styling (CSS)
+📄 auth-form.component.css
+css
+Copy
+Edit
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: url('/assets/bg.jpg') no-repeat center center;
+  background-size: cover;
+}
+
+.auth-card {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  text-align: center;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.title span {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.description {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.subtitle {
+  font-size: 18px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.btn {
+  width: 100%;
+  background-color: #007bff;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.link-text {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.link-text a {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
 
 
 
