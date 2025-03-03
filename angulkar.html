@@ -1,384 +1,73 @@
-dashboard.component.ts
-
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+// Import necessary modules
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-dashboard',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  selector: 'app-auth-form',
+  template: `
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+      <label for="username">Username:</label>
+      <input id="username" formControlName="username" />
+      <div *ngIf="authForm.get('username')?.invalid && authForm.get('username')?.touched">
+        Username is required
+      </div>
+
+      <label for="password">Password:</label>
+      <input id="password" formControlName="password" type="password" />
+      <div *ngIf="authForm.get('password')?.invalid && authForm.get('password')?.touched">
+        Password must be at least 6 characters
+      </div>
+
+      <ng-container *ngIf="isSignup">
+        <label for="confirmPassword">Confirm Password:</label>
+        <input id="confirmPassword" formControlName="confirmPassword" type="password" />
+        <div *ngIf="authForm.hasError('passwordMismatch') && authForm.get('confirmPassword')?.touched">
+          Passwords do not match
+        </div>
+      </ng-container>
+
+      <button type="submit" [disabled]="authForm.invalid">{{ isSignup ? 'Sign Up' : 'Login' }}</button>
+    </form>
+    <p *ngIf="!isSignup">Don't have an account? <a (click)="navigateToSignup()">Signup</a></p>
+  `,
+  styles: [
+    'input { display: block; margin-bottom: 10px; }',
+    'div { color: red; font-size: 12px; }',
+    'p { margin-top: 10px; cursor: pointer; color: blue; text-decoration: underline; }'
+  ]
 })
-export class DashboardComponent {
-  books = [
-    { title: 'What If?', author: 'Randall Munroe', cover: 'assets/books/what_if.jpg' },
-    { title: 'Milk and Honey', author: 'Rupi Kaur', cover: 'assets/books/milk_and_honey.jpg' },
-    { title: 'Scope and Closures (JS)', author: 'Kyle Simpson, 2014', cover: 'assets/books/scope_closures.jpg' },
-    { title: 'A Very Short Introduction to AI', author: 'Margaret A. Boden', cover: 'assets/books/ai_intro.jpg' },
-    { title: 'Sprint', author: 'Jake Knapp, 2000', cover: 'assets/books/sprint.jpg' }
-  ];
-}
+export class AuthFormComponent {
+  @Input() isSignup = false;
+  @Output() formSubmitted = new EventEmitter<FormGroup>();
 
+  authForm: FormGroup;
 
-dashboard.component.html
+  constructor(private router: Router) {
+    this.authForm = new FormGroup({
+      username: new FormControl('', Validators.required),
+      password: new FormControl('', [Validators.required, Validators.minLength(6)])
+    });
 
-<div class="container">
-  <h2>Welcome, Anagha!</h2>
-
-  <!-- Stats Section -->
-  <div class="stats">
-    <div class="stat-item">
-      <img src="assets/icons/issued_books.png" alt="Issued Books">
-      <span>Issued Books</span>
-      <span class="count">1</span>
-      <a routerLink="/issued-books">→</a>
-    </div>
-
-    <div class="stat-item">
-      <img src="assets/icons/overdue.png" alt="Overdue Items">
-      <span>Overdue Items</span>
-      <span class="count">0</span>
-      <a routerLink="/overdue-items">→</a>
-    </div>
-
-    <div class="stat-item">
-      <img src="assets/icons/saved.png" alt="Saved Selections">
-      <span>Saved Selections</span>
-      <span class="count">3</span>
-      <a routerLink="/saved-selections">→</a>
-    </div>
-
-    <div class="stat-item">
-      <img src="assets/icons/item_reservation.png" alt="Item Reservations">
-      <span>Item Reservations</span>
-      <span class="count">0</span>
-      <a routerLink="/item-reservations">→</a>
-    </div>
-  </div>
-
-  <!-- New Arrivals Section -->
-  <h3>New Arrivals</h3>
-  <div class="book-grid">
-    <div class="book-item" *ngFor="let book of books">
-      <img [src]="book.cover" [alt]="book.title">
-      <span class="title">{{ book.title }}</span>
-      <span class="author">{{ book.author }}</span>
-    </div>
-  </div>
-</div>
-
-
-.css
-
-
-.container {
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-h2 {
-  text-align: left;
-  font-size: 24px;
-  color: #333;
-}
-
-.stats {
-  display: flex;
-  justify-content: space-between;
-  margin: 20px 0;
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #f8f9fa;
-  padding: 15px;
-  border-radius: 10px;
-  width: 150px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-  transition: 0.3s;
-}
-
-.stat-item:hover {
-  background: #e3f2fd;
-  transform: scale(1.05);
-}
-
-.stat-item img {
-  width: 40px;
-  height: 40px;
-  margin-bottom: 5px;
-}
-
-.stat-item span {
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.count {
-  font-size: 18px;
-  font-weight: bold;
-  color: #007bff;
-}
-
-.stat-item a {
-  font-size: 18px;
-  text-decoration: none;
-  color: #007bff;
-}
-
-.book-grid {
-  display: flex;
-  gap: 15px;
-  overflow-x: auto;
-}
-
-.book-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #f8f9fa;
-  padding: 12px;
-  border-radius: 8px;
-  width: 140px;
-  text-align: center;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.book-item img {
-  width: 100px;
-  height: 140px;
-  border-radius: 5px;
-}
-
-.title {
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.author {
-  font-size: 12px;
-  color: gray;
-}
-
-
-app.route.ts
-
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { IssuedBooksComponent } from './pages/issued-books/issued-books.component';
-import { OverdueItemsComponent } from './pages/overdue-items/overdue-items.component';
-import { SavedSelectionsComponent } from './pages/saved-selections/saved-selections.component';
-import { ItemReservationsComponent } from './pages/item-reservations/item-reservations.component';
-
-export const routes: Routes = [
-  { path: '', component: DashboardComponent },
-  { path: 'issued-books', component: IssuedBooksComponent },
-  { path: 'overdue-items', component: OverdueItemsComponent },
-  { path: 'saved-selections', component: SavedSelectionsComponent },
-  { path: 'item-reservations', component: ItemReservationsComponent }
-];
-
-
-ng generate component pages/issued-books --standalone
-ng generate component pages/overdue-items --standalone
-ng generate component pages/saved-selections --standalone
-ng generate component pages/item-reservations --standalone
-
-
-models/book.model.ts
-
-export interface Book {
-  title: string;
-  author: string;
-  description: string;
-  cover: string;
-}
-
-
-services/book.service.ts
-
-import { Injectable } from '@angular/core';
-import { Book } from '../models/book.model';
-
-@Injectable({
-  providedIn: 'root',
-})
-export class BookService {
-  private savedSelections: Book[] = [];
-
-  getSavedSelections(): Book[] {
-    return this.savedSelections;
-  }
-
-  saveBook(book: Book): void {
-    if (!this.savedSelections.find((b) => b.title === book.title)) {
-      this.savedSelections.push(book);
+    if (this.isSignup) {
+      this.authForm.addControl('confirmPassword', new FormControl('', Validators.required));
+      this.authForm.setValidators(this.passwordMatchValidator);
     }
   }
-}
 
-dashboard.component.ts
-
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
-import { Book } from 'src/app/models/book.model';
-
-@Component({
-  selector: 'app-dashboard',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
-})
-export class DashboardComponent {
-  books: Book[] = [
-    { title: 'What If?', author: 'Randall Munroe', description: 'Serious scientific answers to absurd hypothetical questions.', cover: 'assets/books/what_if.jpg' },
-    { title: 'Milk and Honey', author: 'Rupi Kaur', description: 'A collection of poetry about survival and love.', cover: 'assets/books/milk_and_honey.jpg' },
-    { title: 'Scope and Closures (JS)', author: 'Kyle Simpson, 2014', description: 'An in-depth look at JavaScript scope and closures.', cover: 'assets/books/scope_closures.jpg' },
-    { title: 'A Very Short Introduction to AI', author: 'Margaret A. Boden', description: 'Explains artificial intelligence in simple terms.', cover: 'assets/books/ai_intro.jpg' },
-    { title: 'Sprint', author: 'Jake Knapp, 2000', description: 'A guide to solving big problems in five days.', cover: 'assets/books/sprint.jpg' }
-  ];
-
-  constructor(private router: Router) {}
-
-  viewBookDetails(book: Book) {
-    this.router.navigate(['/book-details'], { state: { book } });
-  }
-}
-
-
-dashboard.component.html
-
-<h3>New Arrivals</h3>
-<div class="book-grid">
-  <div class="book-item" *ngFor="let book of books" (click)="viewBookDetails(book)">
-    <img [src]="book.cover" [alt]="book.title">
-    <span class="title">{{ book.title }}</span>
-    <span class="author">{{ book.author }}</span>
-  </div>
-</div>
-
-book-details-componenet.ts
-
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Book } from 'src/app/models/book.model';
-import { BookService } from 'src/app/services/book.service';
-
-@Component({
-  selector: 'app-book-details',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './book-details.component.html',
-  styleUrls: ['./book-details.component.css']
-})
-export class BookDetailsComponent {
-  book: Book | null = null;
-
-  constructor(private router: Router, private bookService: BookService) {
-    const navigation = this.router.getCurrentNavigation();
-    this.book = navigation?.extras.state?.['book'] ?? null;
+  passwordMatchValidator(form: FormGroup) {
+    const password = form.get('password')?.value;
+    const confirmPassword = form.get('confirmPassword')?.value;
+    return password === confirmPassword ? null : { passwordMismatch: true };
   }
 
-  saveBook() {
-    if (this.book) {
-      this.bookService.saveBook(this.book);
-      alert('Book saved to your selections!');
+  onSubmit() {
+    if (this.authForm.valid) {
+      this.formSubmitted.emit(this.authForm);
     }
   }
+
+  navigateToSignup() {
+    this.router.navigate(['/signup']);
+  }
 }
-
-book-details.componenet.htlm
-
-<div *ngIf="book" class="book-details">
-  <img [src]="book.cover" [alt]="book.title">
-  <h2>{{ book.title }}</h2>
-  <h4>{{ book.author }}</h4>
-  <p>{{ book.description }}</p>
-  <button (click)="saveBook()">Save to Selections</button>
-</div>
-
-
-book-details.componenet.css
-
-.book-details {
-  text-align: center;
-  padding: 20px;
-}
-
-.book-details img {
-  width: 150px;
-  border-radius: 10px;
-}
-
-button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-
-saved-selections.component.ts
-
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { BookService } from 'src/app/services/book.service';
-
-@Component({
-  selector: 'app-saved-selections',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './saved-selections.component.html',
-  styleUrls: ['./saved-selections.component.css']
-})
-export class SavedSelectionsComponent {
-  savedBooks = this.bookService.getSavedSelections();
-
-  constructor(private bookService: BookService) {}
-}
-
-
-saved-selections.component.html
-
-<h2>Saved Selections</h2>
-<div class="book-grid" *ngIf="savedBooks.length > 0; else emptyState">
-  <div class="book-item" *ngFor="let book of savedBooks">
-    <img [src]="book.cover" [alt]="book.title">
-    <span class="title">{{ book.title }}</span>
-    <span class="author">{{ book.author }}</span>
-  </div>
-</div>
-
-<ng-template #emptyState>
-  <p>No saved books yet.</p>
-</ng-template>
-
-
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { BookDetailsComponent } from './pages/book-details/book-details.component';
-import { SavedSelectionsComponent } from './pages/saved-selections/saved-selections.component';
-
-export const routes: Routes = [
-  { path: '', component: DashboardComponent },
-  { path: 'book-details', component: BookDetailsComponent },
-  { path: 'saved-selections', component: SavedSelectionsComponent }
-];
-
-
-
-
